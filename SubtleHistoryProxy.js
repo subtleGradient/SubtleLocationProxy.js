@@ -80,7 +80,7 @@ function listenForLocationChanges(){
 		clearInterval(listenForLocationChanges_interval)
 		listenForLocationChanges_interval = setInterval(function(){
 			if (proxyElement.contentWindow._SlPiD != ID){
-				handleProxyUrlChange({ target:proxyElement, type:'poll' })
+				handleProxyUrlChange({ target:proxyElement/*, type:'poll'*/ })
 			}
 		}, 250)
 	}
