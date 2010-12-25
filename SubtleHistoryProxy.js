@@ -79,9 +79,10 @@ function listenForLocationChanges(){
 		proxyElement.contentWindow._SlPiD = SubtleLocationProxy.ID
 		clearInterval(listenForLocationChanges_interval)
 		listenForLocationChanges_interval = setInterval(function(){
-			if (proxyElement.contentWindow._SlPiD != ID){
-				handleProxyUrlChange({ target:proxyElement/*, type:'poll'*/ })
-			}
+			var id
+			try { id = proxyElement.contentWindow._SlPiD }
+			catch (e){ clearInterval(listenForLocationChanges_interval) }
+			if (id != ID) handleProxyUrlChange({ target:proxyElement/*, type:'poll'*/ })
 		}, 250)
 	}
 }
