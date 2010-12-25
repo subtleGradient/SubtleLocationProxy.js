@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv=Content-type content="text/html; charset=utf-8">
+	<title>SubtleLocationProxy 'tests'</title>
+</head>
+<body>
+
+<p>
+<a target=child href="child-a.html#bottom">child-a.html</a>
+<a target=child href="child-b.html#bottom">child-b.html</a>
+</p>
+
+<script src="../SubtleLocationProxy.js"></script>
+
+<script>
+var childWindow
+function setupProxy(){
+	childWindow = window.open('child-a.html', 'childWindow')
+	SubtleLocationProxy.setProxy({contentWindow:childWindow})
+}
+</script>
+
+<button onclick="setupProxy()">setupProxy</button>
+
+</body>
+</html>
