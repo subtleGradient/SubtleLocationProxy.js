@@ -55,9 +55,10 @@ function setLocationOnProxy(proxy, location){
 		proxy.contentWindow.location.replace(location)
 }
 
+SubtleLocationProxy.toLocation = convertStringToLocation
 var locationObject = document.createElement('a')
 function convertStringToLocation(locationString){
-	locationObject.href = locationString
+	locationObject.href = ''+locationString
 	return locationObject
 }
 
