@@ -39,7 +39,11 @@ SubtleLocationProxy.setLocation = function(newLocation){
 }
 
 SubtleLocationProxy.getLocation = function(){
-	return decodeURIComponent(location.hash.substring(1))
+	// When location is "foo.com/#/bar?baz"
+	// In IE6 location.hash == '#/bar' && location.search == '?baz' in IE6
+	var loc = (''+location).split('#')
+	loc.splice(0,1)
+	return decodeURIComponent(loc.join('#'))
 }
 
 SubtleLocationProxy.setProxy = function(element){
