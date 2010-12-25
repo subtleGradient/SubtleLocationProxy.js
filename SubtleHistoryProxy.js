@@ -113,7 +113,7 @@ setTimeout(function(){
 	SubtleLocationProxy.setProxy(window.SubtleLocationProxy_element)
 	var $$ = window.$$ || window.$
 	if (document.querySelector) SubtleLocationProxy.setProxy(document.querySelector('[data-history=proxy]'))
-	else if ($$) SubtleLocationProxy.setProxy($$('[data-history=proxy]')[0])
+	else if ($$) SubtleLocationProxy.setProxy($$('[data-history~=proxy]')[0])
 }, 100)
 
 }(SubtleLocationProxy));
