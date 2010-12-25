@@ -5,18 +5,12 @@ description: |
   SubtleLocationProxy will proxy the location of one frame to the hash of another and vice-versa.
   It's handy for sites that simply wrap a fancy UI around simple HTML pages.
 
-authors: Thomas Aylott
-copyright: © 2010 Thomas Aylott <thomas@mootools.net>
+authors: Thomas Aylott <oblivious@subtlegradient.com>
+copyright: © 2010 Thomas Aylott
 license: MIT
 
 provides: SubtleLocationProxy
-# requires: Nothing!
-
-environments:
-  - Safari 5
-  - IE8
-  - Firefox 3.6
-  - IE6
+# requires: document.querySelector || $$ || $
 ...
 */
 
@@ -30,7 +24,8 @@ var has_iframe_onreadystatechange = typeof document.createElement('iframe').onre
 
   , ID = SubtleLocationProxy.ID = +new Date
 
-SubtleLocationProxy.setLocation = function(newLocation){
+SubtleLocationProxy.setLocation = setLocation
+function setLocation(newLocation){
 	if (typeof newLocation == 'string') newLocation = convertStringToLocation(newLocation)
 	newLocation = newLocation.pathname + newLocation.search + newLocation.hash
 	if (SubtleLocationProxy.getLocation() == newLocation) return
@@ -38,7 +33,8 @@ SubtleLocationProxy.setLocation = function(newLocation){
 	location.replace((''+location).split('#')[0] + '#' + newLocation)
 }
 
-SubtleLocationProxy.getLocation = function(){
+SubtleLocationProxy.getLocation = getLocation
+function getLocation(){
 	// When location is "foo.com/#/bar?baz"
 	// In IE6 location.hash == '#/bar' && location.search == '?baz' in IE6
 	var loc = (''+location).split('#')
@@ -46,17 +42,21 @@ SubtleLocationProxy.getLocation = function(){
 	return decodeURIComponent(loc.join('#'))
 }
 
-SubtleLocationProxy.setProxy = function(element){
+SubtleLocationProxy.setProxy = setProxy
+function setProxy(element){
 	if (!element) return
+	ignoreLocationChanges()
 	SubtleLocationProxy.proxyElement = element
 	listenForLocationChanges()
-	setLocationOnProxy(element, SubtleLocationProxy.getLocation())
+	setProxyLocation(SubtleLocationProxy.getLocation())
 }
 
-function setLocationOnProxy(proxy, location){
+SubtleLocationProxy.setProxyLocation
+function setProxyLocation(location){
 	if (!location) return
-	if (''+convertStringToLocation(location) != ''+convertStringToLocation(proxy.contentWindow.location))
-		proxy.contentWindow.location.replace(location)
+	var proxyElement = SubtleLocationProxy.proxyElement
+	if (''+convertStringToLocation(location) != ''+convertStringToLocation(proxyElement.contentWindow.location))
+		proxyElement.contentWindow.location.replace(location)
 }
 
 SubtleLocationProxy.toLocation = convertStringToLocation
@@ -86,8 +86,23 @@ function listenForLocationChanges(){
 		}, 250)
 	}
 }
+function ignoreLocationChanges(){
+	var proxyElement = SubtleLocationProxy.proxyElement
+	if (!proxyElement) return
+	if (proxyElement.removeEventListener) proxyElement.removeEventListener('load', handleProxyUrlChange, false)
+	else if (proxyElement.detachEvent) proxyElement.detachEvent('onload', handleProxyUrlChange)
+	if (has_iframe_onreadystatechange){
+		if (proxyElement.removeEventListener) proxyElement.removeEventListener('readystatechange', handleProxyUrlChange, false)
+		else if (proxyElement.detachEvent) proxyElement.detachEvent('onreadystatechange', handleProxyUrlChange)
+	}
+	clearInterval(listenForLocationChanges_interval)
+	var window = proxyElement.contentWindow
+	if (window.addEventListener) window.removeEventListener('hashchange', handleProxyHashChange, false)
+	else if (window.attachEvent) window.detachEvent('onhashchange', handleProxyHashChange)
+}
 
-function listenForProxyHashchange(window, handler){
+
+function listenForHashchange(window, handler){
 	if (window._SlPiDhc == ID) return
 	window._SlPiDhc = ID
 	if (window.addEventListener) window.addEventListener('hashchange', handler, false)
@@ -99,7 +114,7 @@ function handleProxyUrlChange(){
 	if (proxyElement.contentWindow._SlPiD == ID) return
 	proxyElement.contentWindow._SlPiD = ID
 	SubtleLocationProxy.setLocation(proxyElement.contentWindow.location)
-	listenForProxyHashchange(proxyElement.contentWindow, handleProxyHashChange)
+	listenForHashchange(proxyElement.contentWindow, handleProxyHashChange)
 }
 
 function handleProxyHashChange(){
@@ -109,12 +124,12 @@ function handleProxyHashChange(){
 var ignoreHashChange
 function handleMasterHashChange(){
 	if (ignoreHashChange){ignoreHashChange = false;return}
-	setLocationOnProxy(SubtleLocationProxy.proxyElement, SubtleLocationProxy.getLocation())
+	setProxyLocation(SubtleLocationProxy.getLocation())
 }
 
 // Setup the master page and default state
 
-listenForProxyHashchange(window, handleMasterHashChange)
+listenForHashchange(window, handleMasterHashChange)
 
 setTimeout(function(){
 	SubtleLocationProxy.setProxy(window.SubtleLocationProxy_element)
