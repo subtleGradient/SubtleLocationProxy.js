@@ -16,6 +16,7 @@ environments:
   - Safari 5
   - IE8
   - Firefox 3.6
+  - IE6
 ...
 */
 
