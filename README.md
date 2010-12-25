@@ -15,6 +15,22 @@ Usage
 
 Note: If your browser doesn't support `document.querySelector` then you'll need to have either `window.$$` (e.g. MooTools) or `window.$` (e.g. jQuery) to get the single `[data-history~=proxy]` CSS selector working. Alternatively you can set `window.SubtleLocationProxy_element` to your element-to-proxy before loading SubtleLocationProxy.
 
+Alternative Usage
+-----------------
+
+1. Include the `SubtleLocationProxy.js` script[src] in your page (on the bottom, like normal).
+2. Add the `data-history=proxy` attribute to an `IFRAME` element.
+3. `SubtleLocationProxy.setProxy(myProxyElement)`
+
+NOTE: No need to wait for the DOM to be ready.
+
+
+Proxy Element
+-------------
+
+A Proxy Element can be any object that has a contentWindow property that resolves to a window object. i.e. IFRAME or maybe a FRAME and maybe when opening a new window or something weird and custom. You could probly even use an IFRAME from some other window.
+
+
 Browser Support
 ---------------
 
