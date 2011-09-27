@@ -133,9 +133,11 @@ listenForHashchange(window, handleMasterHashChange)
 
 setTimeout(function(){
 	SubtleLocationProxy.setProxy(window.SubtleLocationProxy_element)
-	var $$ = window.$$ || window.$
-	if (document.querySelector) SubtleLocationProxy.setProxy(document.querySelector('[data-history=proxy]'))
-	else if ($$) SubtleLocationProxy.setProxy($$('[data-history~=proxy]')[0])
+	var iframes = document.getElementsByTagName('iframe')
+	for (var i=-1, iframe; iframe = iframes[++i];) {
+		if (!iframe || iframe.getAttribute('data-history') != 'proxy') continue
+		SubtleLocationProxy.setProxy(iframe)
+	}
 }, 100)
 
 }(SubtleLocationProxy));
